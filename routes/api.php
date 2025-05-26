@@ -12,4 +12,5 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [UserAuthController::class, 'register'])->name('api.register');
 Route::post('/login', [UserAuthController::class, 'login'])->name('api.login');
 
-Route::post('/start-time', [ProjectController::class , 'start'])->name('api.time-logs.start');
+Route::post('/project/start-time', [ProjectController::class , 'start'])->name('api.time-logs.start');
+Route::post('/project/stop-time', [ProjectController::class , 'stop'])->name('api.time-logs.stop');

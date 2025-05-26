@@ -20,25 +20,57 @@ class ProjectController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-        $time_logs = TimeLog::select('project_id')->get();
+        $all_time_logs = TimeLog::select('project_id')->get();
 
-        foreach ($time_logs as $time_log) {
+        foreach ($all_time_logs as $time_log) {
             if ($time_log->project_id == $request->project_id) {
                 return response()->json([
                     'message' => 'Time log already started for this project',
                 ], 400);
             }
         }
-        
-        $timeLog = \App\Models\TimeLog::create([
+
+        $time_log = TimeLog::create([
             'project_id' => $request->project_id,
             'start_time' => now(),
             'description' => $request->description ?? null,
         ]);
         return response()->json([
             'message' => 'Time log started successfully',
-            'time_log' => $timeLog,
+            'time_log' => $time_log,
         ], 201);
 
+    }
+
+    public function stop(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'project_id' => 'required|integer|exists:projects,id',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $time_log = TimeLog::where('project_id', $request->project_id)
+            ->whereNull('end_time')
+            ->first();
+
+        if (!$time_log) {
+            return response()->json([
+                'message' => 'No active time log found for this project',
+            ], 404);
+        }
+
+        $time_log->end_time = now();
+        $time_log->hours = $time_log->end_time->diff($time_log->start_time); // Convert seconds to hours
+
+        $time_log->save();
+
+        return response()->json([
+            'message' => 'Time log stopped successfully',
+            'time_log' => $time_log,
+        ], 200);
     }
 }
