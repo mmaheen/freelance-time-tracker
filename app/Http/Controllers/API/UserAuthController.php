@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserAuthController extends Controller
@@ -24,7 +25,7 @@ class UserAuthController extends Controller
         }
 
         $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
+        $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
 
         $token = $user->createToken('API Token')->plainTextToken;
@@ -38,6 +39,25 @@ class UserAuthController extends Controller
 
     public function login(Request $request)
     {
-        // Logic for user login
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+        $user = User::where('email', $request->email)->first();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+        $token = $user->createToken('API Token')->plainTextToken;
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 200);
     }
 }
