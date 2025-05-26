@@ -9,7 +9,6 @@ class ClientSeeder extends Seeder
 {
     public function run(): void
     {
-        //
         $faker = \Faker\Factory::create();
         
         foreach (range(1, 10) as $index) {

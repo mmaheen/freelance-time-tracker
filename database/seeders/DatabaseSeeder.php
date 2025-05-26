@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ClientSeeder::class,
+            ProjectSeeder::class,
+            TimeLogSeeder::class,
         ]);
     }
 }
