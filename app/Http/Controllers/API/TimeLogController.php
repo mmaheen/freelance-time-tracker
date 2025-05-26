@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\TimeLog;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class ProjectController extends Controller
+class TimeLogController extends Controller
 {
-    public function start(Request $request)
+    //
+        public function start(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'project_id' => 'required|integer|exists:projects,id',
