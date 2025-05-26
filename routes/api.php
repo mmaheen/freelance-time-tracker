@@ -14,6 +14,7 @@ Route::post('/register', [UserAuthController::class, 'register'])->name('api.reg
 Route::post('/login', [UserAuthController::class, 'login'])->name('api.login');
 
 Route::post('/project/create', [ProjectController::class, 'store'])->name('api.project.create');
+Route::put('/project/update/{id}', [ProjectController::class, 'update'])->name('api.project.update');
 
 Route::post('/project/start-time', [TimeLogController::class , 'start'])->name('api.time-logs.start');
 Route::post('/project/stop-time', [TimeLogController::class , 'stop'])->name('api.time-logs.stop');

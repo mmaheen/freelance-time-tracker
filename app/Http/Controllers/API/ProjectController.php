@@ -43,4 +43,38 @@ class ProjectController extends Controller
             'data' => $project,
         ], 201);
     }
+
+    public function update(Request $request, $id){
+        $project = Project::find($id);
+        if (!$project) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Project not found',
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'string|max:1000',
+            'client_id' => 'integer|exists:clients,id',
+            'status' => 'in:active,inactive',
+            'deadline' => 'date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $project->update($request->all());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Project updated successfully',
+            'data' => $project,
+        ]);
+    }
 }
